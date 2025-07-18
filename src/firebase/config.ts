@@ -3,14 +3,14 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDOBpVEPavgvjYGG_eBvkC2Dm_pJtBeVHk",
-    authDomain: "hum-bhi-detect-karlenge.firebaseapp.com",
-    databaseURL: "https://hum-bhi-detect-karlenge-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "hum-bhi-detect-karlenge",
-    storageBucket: "hum-bhi-detect-karlenge.firebasestorage.app",
-    messagingSenderId: "863231913183",
-    appId: "1:863231913183:web:f3cda0a8a5c28bf21a0d6a",
-    measurementId: "G-QJSV8CE4TY"
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    measurementId: process.env.NEXT_PUBLIC_MEASUREMENT_ID
   };
 
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);

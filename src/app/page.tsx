@@ -37,7 +37,6 @@ export default function LoginPage() {
     }
   };
 
-  // Show spinner while loading auth state
   if (loading || user) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
