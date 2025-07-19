@@ -5,7 +5,6 @@ import { useAuth } from '../../components/AuthProvider';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Typography, Box, CircularProgress, Paper } from '@mui/material';
-import Layout from "../../components/layout";
 
 const HeatmapMap = dynamic(() => import('@/components/HeatmapMap'), {
   ssr: false,
@@ -29,7 +28,7 @@ export default function DashboardPage() {
     );
 
   return (
-    <Layout>
+    <Box sx={{ p: 2 }}>
       <Paper sx={{ p: 2, mb: 2 }}>
         <Typography variant="h5" gutterBottom>People Stats</Typography>
         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 4 }}>
@@ -96,6 +95,6 @@ export default function DashboardPage() {
       <Paper sx={{ p: 2 }}>
         <HeatmapMap />
       </Paper>
-    </Layout>
+    </Box>
   );
 }

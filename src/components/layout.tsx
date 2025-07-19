@@ -5,11 +5,9 @@ import {
   Drawer,
   AppBar,
   Toolbar,
-  Typography,
   Avatar,
   List,
   ListItemButton,
-  ListItemText,
   Divider,
   Chip,
   IconButton,
@@ -21,9 +19,9 @@ import { logout } from "../lib/auth";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "../lib/auth";
 import HeaderClock from "./HeaderClock";
+import Link from "next/link";
 
 const drawerWidth = 240;
-const navItems = ["Dashboard", "Live Camera", "Alerts", "Security"];
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -55,7 +53,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             ) : (
               <Avatar sx={{ width: 32, height: 32 }}>
                 {(currentUser?.displayName || currentUser?.email || "U")[0]}
-                
               </Avatar>
             )}
 
@@ -82,14 +79,33 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         >
           <Divider />
           <List>
-            {navItems.map((text) => (
+            <Link href="/dashboard" passHref>
               <ListItemButton
-                key={text}
-                selected={pathname.includes(text.toLowerCase())}
+                selected={pathname === "/dashboard"}
               >
-                <ListItemText primary={text} />
+                Dashboard
               </ListItemButton>
-            ))}
+            </Link>
+
+            <Link href="/live-camera" passHref>
+              <ListItemButton
+                selected={pathname === "/live-camera"}
+              >
+                Live Camera
+              </ListItemButton>
+            </Link>
+
+            <Link href="/alerts" passHref>
+              <ListItemButton selected={pathname === "/alerts"} >
+                Alerts
+              </ListItemButton>
+            </Link>
+
+            <Link href="/security" passHref>
+              <ListItemButton selected={pathname === "/security"} >
+                Security
+              </ListItemButton>
+            </Link>
           </List>
         </Drawer>
 

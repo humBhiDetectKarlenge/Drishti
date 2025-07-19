@@ -1,5 +1,6 @@
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import Providers from './Providers';
+import Layout from '../components/layout'; 
 
 export const metadata = {
   title: 'Drishti Dashboard',
@@ -11,7 +12,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <AppRouterCacheProvider>
-          <Providers>{children}</Providers>
+          <Providers>
+            <Layout>{children}</Layout>
+          </Providers>
         </AppRouterCacheProvider>
       </body>
     </html>
