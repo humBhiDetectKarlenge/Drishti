@@ -22,7 +22,7 @@ export default function LoginPage() {
   const handleEmailLogin = async () => {
     try {
       await loginWithEmail(email, password);
-      router.push('/dashboard');
+      router.push('/pageroutes/dashboard');
     } catch (err) {
       console.error(err);
     }
