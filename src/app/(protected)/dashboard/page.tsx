@@ -5,7 +5,6 @@ import { useAuth } from "../../../components/AuthProvider";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Typography, Box, CircularProgress, Paper } from "@mui/material";
-import Layout from "@/components/layout";
 
 const HeatmapMap = dynamic(() => import("@/components/HeatmapMap"), {
   ssr: false,

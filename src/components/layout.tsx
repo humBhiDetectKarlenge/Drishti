@@ -11,6 +11,7 @@ import {
   Divider,
   Chip,
   IconButton,
+  ListItemText
 } from "@mui/material";
 import { usePathname } from "next/navigation";
 import React, { useState, useEffect } from "react";
@@ -83,7 +84,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <ListItemButton
                 selected={pathname === "/dashboard"}
               >
-                Dashboard
+                <ListItemText>
+                              Dashboard
+                  </ListItemText>
               </ListItemButton>
             </Link>
 
