@@ -29,11 +29,6 @@ jobs:
         run: |
           gcloud auth configure-docker us-central1-docker.pkg.dev
 
-      - name: Write .env file
-        run: | 
-          echo "${{ secrets.ENV_FILE }}" > .env
-          cat .env
-
       - name: Build and Push Docker Image
         run: |
           docker build -t us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.DOCKER_IMAGE_NAME }}/frontend:latest .
