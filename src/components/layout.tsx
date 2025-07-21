@@ -21,6 +21,7 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "../lib/auth";
 import HeaderClock from "./HeaderClock";
 import Link from "next/link";
+import EditNotificationsIcon from '@mui/icons-material/EditNotifications';
 
 const drawerWidth = 240;
 
@@ -57,6 +58,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </Avatar>
             )}
 
+            <IconButton  color="inherit">
+              <EditNotificationsIcon />
+            </IconButton>
             <IconButton onClick={logout} color="inherit">
               <LogoutIcon />
             </IconButton>
@@ -80,7 +84,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         >
           <Divider />
           <List>
-            <Link href="/dashboard" passHref>
+            <Link href="/dashboard" passHref style={{ textDecoration: "none", color: "black" }}>
               <ListItemButton
                 selected={pathname === "/dashboard"}
               >
@@ -90,26 +94,39 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </ListItemButton>
             </Link>
 
-            <Link href="/live-camera" passHref>
+            <Link href="/livecamera" passHref style={{ textDecoration: "none", color: "black" }}>
               <ListItemButton
-                selected={pathname === "/live-camera"}
+                selected={pathname === "/livecamera"}
               >
                 Live Camera
               </ListItemButton>
             </Link>
 
-            <Link href="/alerts" passHref>
+            <Link href="/alerts" passHref style={{ textDecoration: "none", color: "black" }}>
               <ListItemButton selected={pathname === "/alerts"} >
                 Alerts
               </ListItemButton>
             </Link>
 
-            <Link href="/security" passHref>
+            {/* <Link href="/security" passHref style={{ textDecoration: "none", color: "black" }}>
               <ListItemButton selected={pathname === "/security"} >
                 Security
               </ListItemButton>
+            </Link> */}
+
+            <Link href="/chatbot" passHref style={{ textDecoration: "none", color: "black" }}>
+              <ListItemButton selected={pathname === "/chatbot"} >
+                ChatBot
+              </ListItemButton>
+            </Link>
+
+            <Link href="/roleassign" passHref style={{ textDecoration: "none", color: "black" }}>
+              <ListItemButton selected={pathname === "/roleassign"} >
+                Role Allot
+              </ListItemButton>
             </Link>
           </List>
+
         </Drawer>
 
         <Box

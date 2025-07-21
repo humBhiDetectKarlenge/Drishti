@@ -4,8 +4,6 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    console.log('Fetching reports from Firestore...');
-
     const reportsRef = collection(db, 'reports');
     const q = query(reportsRef, orderBy('timestamp', 'desc'));
     const querySnapshot = await getDocs(q);
@@ -21,6 +19,7 @@ export async function GET() {
         priority: data.priority ?? '',
         uuid: data.uuid ?? '',
         description: data.description ?? '',
+        authority: data.authority
       };
     });
 

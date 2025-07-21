@@ -1,17 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../components/AuthProvider';
-import { Button, TextField, Typography, Container, Stack, CircularProgress, Box } from '@mui/material';
-import { loginWithGoogle, loginWithEmail } from '../lib/auth';
+import { Button, Typography, Container, Stack, CircularProgress, Box } from '@mui/material';
+import { loginWithGoogle } from '../lib/auth';
+import Script from "next/script";
+
 
 export default function LoginPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
-
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
 
   useEffect(() => {
     if (!loading && user) {
@@ -19,21 +18,12 @@ export default function LoginPage() {
     }
   }, [user, loading, router]);
 
-  const handleEmailLogin = async () => {
-    try {
-      await loginWithEmail(email, password);
-      router.push('/pageroutes/dashboard');
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   const handleGoogleLogin = async () => {
     try {
       await loginWithGoogle();
       router.push('/dashboard');
     } catch (err) {
-      console.error(err);
+      console.error("Google login failed:", err);
     }
   };
 
@@ -47,30 +37,16 @@ export default function LoginPage() {
 
   return (
     <Container maxWidth="sm" sx={{ mt: 10 }}>
+      <Script
+        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.MAPS_API_KEY}`}
+        strategy="beforeInteractive"
+      />
       <Typography variant="h4" gutterBottom>
         Welcome to Drishti
       </Typography>
       <Stack spacing={2}>
         <Button variant="contained" color="primary" onClick={handleGoogleLogin}>
           Sign in with Google
-        </Button>
-        <TextField
-          label="Email"
-          variant="outlined"
-          fullWidth
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <TextField
-          label="Password"
-          type="password"
-          variant="outlined"
-          fullWidth
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <Button variant="outlined" color="secondary" onClick={handleEmailLogin}>
-          Login with Email
         </Button>
       </Stack>
     </Container>
