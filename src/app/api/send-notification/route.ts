@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { token, topic, title, body: msgBody, data } = body;
 
-    // Require either token or topic
+    // Require either token or
     if ((!token && !topic) || !title || !msgBody) {
       return NextResponse.json(
         {
