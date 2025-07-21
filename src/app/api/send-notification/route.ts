@@ -5,23 +5,32 @@ import { fcm } from "@/lib/firebase-admin";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { token, title, body: msgBody, data } = body;
+    const { token, topic, title, body: msgBody, data } = body;
 
-    if (!token || !title || !msgBody) {
+    // Require either token or topic
+    if ((!token && !topic) || !title || !msgBody) {
       return NextResponse.json(
-        { success: false, error: "Missing required fields" },
+        {
+          success: false,
+          error: "Missing required fields: token or topic, title, body",
+        },
         { status: 400 }
       );
     }
 
-    const message = {
-      token,
+    const message: any = {
       notification: {
         title,
         body: msgBody,
       },
       data: data || {},
     };
+
+    if (token) {
+      message.token = token;
+    } else if (topic) {
+      message.topic = topic;
+    }
 
     const response = await fcm.send(message);
 
