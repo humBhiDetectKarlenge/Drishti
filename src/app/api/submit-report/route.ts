@@ -21,10 +21,8 @@ const storage = new Storage({
     private_key: serviceAccount.private_key,
   },
 });
-
-const bucket = storage.bucket(
-  serviceAccount.bucket_name || process.env.GCP_BUCKET_NAME!
-);
+const bucketName = process.env.GCP_BUCKET_NAME;
+const bucket = storage.bucket("storage-bucket-files");
 console.log("🚀 ~ bucket:", bucket);
 
 export async function POST(req: NextRequest) {
