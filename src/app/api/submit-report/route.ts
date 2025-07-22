@@ -1,15 +1,15 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { addDoc, collection, Timestamp } from 'firebase/firestore';
-import { db } from '../../../firebase/config';
-import { Storage } from '@google-cloud/storage';
-import { randomUUID } from 'crypto';
+import { NextRequest, NextResponse } from "next/server";
+import { addDoc, collection, Timestamp } from "firebase/firestore";
+import { db } from "../../../firebase/config";
+import { Storage } from "@google-cloud/storage";
+import { randomUUID } from "crypto";
 
-export const dynamic = 'force-dynamic'; 
+export const dynamic = "force-dynamic";
 const storage = new Storage({
   projectId: process.env.GCP_PROJECT_ID,
   credentials: {
     client_email: process.env.GCP_CLIENT_EMAIL,
-    private_key: process.env.GCP_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+    private_key: process.env.GCP_PRIVATE_KEY?.replace(/\\n/g, "\n"),
   },
 });
 
@@ -17,30 +17,40 @@ if (!process.env.GCP_CLIENT_EMAIL || !process.env.GCP_PRIVATE_KEY) {
   throw new Error("GCP credentials not set in environment variables.");
 }
 
-
 const bucket = storage.bucket(process.env.GCP_BUCKET_NAME!);
 
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
 
-    const file = formData.get('file') as File | null;
+    const file = formData.get("file") as File | null;
 
-    const zone = formData.get('zone')?.toString();
-    const lat = parseFloat(formData.get('lat')?.toString() ?? '0');
-    const lng = parseFloat(formData.get('lng')?.toString() ?? '0');
-    const issueType = formData.get('issueType')?.toString();
-    const priority = formData.get('priority')?.toString();
-    const uuid = formData.get('uuid')?.toString();
-    const authority = formData.get('authority')?.toString();
-    const description = formData.get('description')?.toString() || '';
-    const timestamp = formData.get('timestamp')?.toString();
+    const zone = formData.get("zone")?.toString();
+    const lat = parseFloat(formData.get("lat")?.toString() ?? "0");
+    const lng = parseFloat(formData.get("lng")?.toString() ?? "0");
+    const issueType = formData.get("issueType")?.toString();
+    const priority = formData.get("priority")?.toString();
+    const uuid = formData.get("uuid")?.toString();
+    const authority = formData.get("authority")?.toString();
+    const description = formData.get("description")?.toString() || "";
+    const timestamp = formData.get("timestamp")?.toString();
 
-    if (!zone || !issueType || !priority || !uuid || !authority || isNaN(lat) || isNaN(lng)) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    if (
+      !zone ||
+      !issueType ||
+      !priority ||
+      !uuid ||
+      !authority ||
+      isNaN(lat) ||
+      isNaN(lng)
+    ) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
     }
 
-    let fileUrl = '';
+    let fileUrl = "";
 
     if (file) {
       const buffer = Buffer.from(await file.arrayBuffer());
@@ -51,18 +61,19 @@ export async function POST(req: NextRequest) {
         await fileRef.save(buffer, {
           contentType: file.type,
         });
-      } catch (e: any) {
-        console.error("Failed to upload file:", e.message);
-        return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+      } catch (e) {
+        console.error("Failed to upload file:", e);
+        return NextResponse.json({ success: false, error: e }, { status: 500 });
       }
-      
-
 
       fileUrl = `https://storage.googleapis.com/${bucket.name}/${filename}`;
     }
+    // test
 
     const docData = {
-      timestamp: timestamp ? Timestamp.fromDate(new Date(timestamp)) : Timestamp.now(),
+      timestamp: timestamp
+        ? Timestamp.fromDate(new Date(timestamp))
+        : Timestamp.now(),
       zone,
       coordinates: { lat, lng },
       issueType,
@@ -70,19 +81,29 @@ export async function POST(req: NextRequest) {
       uuid,
       authority,
       description,
-      fileUrl, 
+      fileUrl,
     };
 
-    await addDoc(collection(db, 'reports'), docData);
+    await addDoc(collection(db, "reports"), docData);
 
-    return NextResponse.json({ success: true, message: 'Report submitted', fileUrl });
-  } catch (err: unknown) {
+    return NextResponse.json({
+      success: true,
+      message: "Report submitted",
+      fileUrl,
+    });
+  } catch (err) {
     if (err instanceof Error) {
       console.error(err.message);
-      return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+      return NextResponse.json(
+        { success: false, error: err.message },
+        { status: 500 }
+      );
     } else {
-      console.error('Unknown error', err);
-      return NextResponse.json({ success: false, error: 'An unknown error occurred.' }, { status: 500 });
+      console.error("Unknown error", err);
+      return NextResponse.json(
+        { success: false, error: "An unknown error occurred." },
+        { status: 500 }
+      );
     }
   }
 }
