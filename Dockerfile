@@ -30,6 +30,8 @@ COPY --from=builder /app/next.config.ts ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 
+COPY --from=builder /app/gcp-storage-key.json ./gcp-storage-key.json
+
 EXPOSE 3000
 
 # Start the app
