@@ -10,7 +10,9 @@ export const dynamic = "force-dynamic";
 
 // Load credentials from the service account file
 const keyPath = join(process.cwd(), "gcp-storage-key.json");
+console.log("🚀 ~ keyPath:", keyPath);
 const serviceAccount = JSON.parse(readFileSync(keyPath, "utf-8"));
+console.log("🚀 ~ serviceAccount:", serviceAccount);
 
 const storage = new Storage({
   projectId: serviceAccount.project_id,
@@ -23,10 +25,12 @@ const storage = new Storage({
 const bucket = storage.bucket(
   serviceAccount.bucket_name || process.env.GCP_BUCKET_NAME!
 );
+console.log("🚀 ~ bucket:", bucket);
 
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
+    console.log("🚀 ~ POST ~ formData:", formData);
 
     const file = formData.get("file") as File | null;
 
