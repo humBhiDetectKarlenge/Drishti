@@ -13,6 +13,11 @@ const storage = new Storage({
   },
 });
 
+if (!process.env.GCP_CLIENT_EMAIL || !process.env.GCP_PRIVATE_KEY) {
+  throw new Error("GCP credentials not set in environment variables.");
+}
+
+
 const bucket = storage.bucket(process.env.GCP_BUCKET_NAME!);
 
 export async function POST(req: NextRequest) {
@@ -42,10 +47,15 @@ export async function POST(req: NextRequest) {
       const filename = `${randomUUID()}-${file.name}`;
       const fileRef = bucket.file(filename);
 
-      await fileRef.save(buffer, {
-        contentType: file.type,
-      });
-      await fileRef.makePublic();
+      try {
+        await fileRef.save(buffer, {
+          contentType: file.type,
+        });
+      } catch (e: any) {
+        console.error("Failed to upload file:", e.message);
+        return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+      }
+      
 
 
       fileUrl = `https://storage.googleapis.com/${bucket.name}/${filename}`;
