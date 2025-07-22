@@ -2,22 +2,27 @@ import { NextRequest, NextResponse } from "next/server";
 import { addDoc, collection, Timestamp } from "firebase/firestore";
 import { db } from "../../../firebase/config";
 import { Storage } from "@google-cloud/storage";
+import { readFileSync } from "fs";
+import { join } from "path";
 import { randomUUID } from "crypto";
 
 export const dynamic = "force-dynamic";
+
+// Load credentials from the service account file
+const keyPath = join(process.cwd(), "gcp-storage-key.json");
+const serviceAccount = JSON.parse(readFileSync(keyPath, "utf-8"));
+
 const storage = new Storage({
-  projectId: process.env.GCP_PROJECT_ID,
+  projectId: serviceAccount.project_id,
   credentials: {
-    client_email: process.env.GCP_CLIENT_EMAIL,
-    private_key: process.env.GCP_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+    client_email: serviceAccount.client_email,
+    private_key: serviceAccount.private_key,
   },
 });
 
-if (!process.env.GCP_CLIENT_EMAIL || !process.env.GCP_PRIVATE_KEY) {
-  throw new Error("GCP credentials not set in environment variables.");
-}
-
-const bucket = storage.bucket(process.env.GCP_BUCKET_NAME!);
+const bucket = storage.bucket(
+  serviceAccount.bucket_name || process.env.GCP_BUCKET_NAME!
+);
 
 export async function POST(req: NextRequest) {
   try {
@@ -68,7 +73,6 @@ export async function POST(req: NextRequest) {
 
       fileUrl = `https://storage.googleapis.com/${bucket.name}/${filename}`;
     }
-    // test
 
     const docData = {
       timestamp: timestamp
