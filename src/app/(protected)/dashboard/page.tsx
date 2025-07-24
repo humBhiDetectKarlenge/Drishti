@@ -36,7 +36,7 @@ export default function DashboardPage() {
 
   return (
     <Box sx={{ p: 2 }}>
-      <Paper sx={{ p: 2, mb: 2 }}>
+      <Paper sx={{ p: 2, mb: 2, mt:8 }}>
         <Typography variant="h5" gutterBottom>
           People Stats
         </Typography>

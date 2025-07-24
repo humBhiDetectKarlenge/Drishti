@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
     const issueType = formData.get("issueType")?.toString();
     const priority = formData.get("priority")?.toString();
     const uuid = formData.get("uuid")?.toString();
-    const authority = formData.get("authority")?.toString();
+    const userType = formData.get("userType")?.toString();
     const description = formData.get("description")?.toString() || "";
     const timestamp = formData.get("timestamp")?.toString();
 
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
       !issueType ||
       !priority ||
       !uuid ||
-      !authority ||
+      !userType ||
       isNaN(lat) ||
       isNaN(lng)
     ) {
@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
       issueType,
       priority,
       uuid,
-      authority,
+      userType,
       description,
       fileUrl,
     };

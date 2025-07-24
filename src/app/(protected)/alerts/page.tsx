@@ -14,8 +14,6 @@ import {
   Chip,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { collection, getDocs, Timestamp } from "firebase/firestore";
-import { db } from "../../../firebase/config";
 import dynamic from "next/dynamic";
 
 const MapViewer = dynamic(() => import("../../../components/mapviewer"), {
@@ -24,7 +22,7 @@ const MapViewer = dynamic(() => import("../../../components/mapviewer"), {
 
 interface Report {
   id: string;
-  timestamp: Timestamp;
+  timestamp: string;
   zone: string;
   coordinates: {
     lat: number;
@@ -47,16 +45,19 @@ export default function AlertTablePage() {
 
   useEffect(() => {
     const fetchReports = async () => {
-      const querySnapshot = await getDocs(collection(db, "reports"));
-      const data: Report[] = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Report[];
-      setReports(data);
+      try {
+        const response = await fetch("/api/get-report");
+        if (!response.ok) throw new Error("Failed to fetch reports");
+        const responseJson: { reports: Report[] } = await response.json();
+        setReports(responseJson.reports);
+      } catch (error) {
+        console.error("Error fetching reports:", error);
+      }
     };
-
+  
     fetchReports();
   }, []);
+  
 
   const handleViewOnMap = (lat: number, lng: number) => {
     setSelectedCoords({ lat, lng });
@@ -79,7 +80,7 @@ export default function AlertTablePage() {
   };
 
   return (
-    <Box p={3}>
+    <Box p={3} sx={{mt: 8}}>
       <Table>
         <TableHead>
           <TableRow>
@@ -99,15 +100,16 @@ export default function AlertTablePage() {
               <TableCell>{report.issueType}</TableCell>
               <TableCell>{report.zone}</TableCell>
               <TableCell>
-                {report.timestamp.toDate().toLocaleString("en-IN", {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                })}
-              </TableCell>
+  {new Date(report.timestamp).toLocaleString("en-IN", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  })}
+</TableCell>
+
 
               <TableCell>
                 <Chip

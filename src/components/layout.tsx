@@ -11,8 +11,17 @@ import {
   Divider,
   Chip,
   IconButton,
-  ListItemText
+  ListItemText,
+  TextField,
+  Typography,
+  Stack,
+  Button,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import { usePathname } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -21,13 +30,24 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "../lib/auth";
 import HeaderClock from "./HeaderClock";
 import Link from "next/link";
-import EditNotificationsIcon from '@mui/icons-material/EditNotifications';
+import EditNotificationsIcon from "@mui/icons-material/EditNotifications";
+import { Snackbar, Alert } from "@mui/material";
+import { resolve } from "path";
 
 const drawerWidth = 240;
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [notifDrawerOpen, setNotifDrawerOpen] = useState(false);
+  const [notifTitle, setNotifTitle] = useState("");
+  const [notifBody, setNotifBody] = useState("");
+  const [selectedTopic, setSelectedTopic] = useState("all");
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMsg, setSnackbarMsg] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">(
+    "success"
+  );
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -58,9 +78,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </Avatar>
             )}
 
-            <IconButton  color="inherit">
+            <IconButton
+              color="inherit"
+              onClick={() => setNotifDrawerOpen(true)}
+            >
               <EditNotificationsIcon />
             </IconButton>
+
             <IconButton onClick={logout} color="inherit">
               <LogoutIcon />
             </IconButton>
@@ -68,7 +92,100 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </Toolbar>
       </AppBar>
 
-      <Box sx={{ display: "flex", flexGrow: 1, mt: 8 }}>
+      <Drawer
+        anchor="right"
+        open={notifDrawerOpen}
+        onClose={() => setNotifDrawerOpen(false)}
+      >
+        <Box sx={{ width: 300, p: 3 }}>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            mb={2}
+          >
+            <Typography variant="h6">Send Notification</Typography>
+            <IconButton onClick={() => setNotifDrawerOpen(false)}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+
+          <Stack spacing={2}>
+            <FormControl fullWidth>
+              <InputLabel id="topic-label">Topic</InputLabel>
+              <Select
+                labelId="topic-label"
+                value={selectedTopic}
+                label="Topic"
+                onChange={(e) => setSelectedTopic(e.target.value)}
+              >
+                <MenuItem value="all">All</MenuItem>
+                <MenuItem value="crowd">Crowd</MenuItem>
+                <MenuItem value="doctor">Doctor</MenuItem>
+                <MenuItem value="police">Police</MenuItem>
+                <MenuItem value="help">Help</MenuItem>
+                <MenuItem value="security">Security</MenuItem>
+              </Select>
+            </FormControl>
+
+            <TextField
+              label="Title"
+              fullWidth
+              value={notifTitle}
+              onChange={(e) => setNotifTitle(e.target.value)}
+            />
+            <TextField
+              label="Body"
+              fullWidth
+              multiline
+              rows={4}
+              value={notifBody}
+              onChange={(e) => setNotifBody(e.target.value)}
+            />
+            <Button
+              variant="contained"
+              onClick={async () => {
+                try {
+                  const res = await fetch("/api/send-notification", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      topic:
+                        selectedTopic === "all" ? "general" : selectedTopic,
+                      title: notifTitle,
+                      body: notifBody,
+                    }),
+                  });
+
+                  const result = await res.json();
+
+                  if (!res.ok || !result.success) {
+                    throw new Error(
+                      result.error || "Failed to send notification."
+                    );
+                  }
+
+                  setSnackbarMsg("Notification sent successfully!");
+                  setSnackbarSeverity("success");
+                  setSnackbarOpen(true);
+
+                  setNotifDrawerOpen(false);
+                  setNotifTitle("");
+                  setNotifBody("");
+                } catch (err: any) {
+                  setSnackbarMsg(err.message);
+                  setSnackbarSeverity("error");
+                  setSnackbarOpen(true);
+                }
+              }}
+            >
+              Send
+            </Button>
+          </Stack>
+        </Box>
+      </Drawer>
+
+      <Box sx={{ display: "flex", flexGrow: 1 }}>
         <Drawer
           variant="permanent"
           sx={{
@@ -84,26 +201,32 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         >
           <Divider />
           <List>
-            <Link href="/dashboard" passHref style={{ textDecoration: "none", color: "black" }}>
-              <ListItemButton
-                selected={pathname === "/dashboard"}
-              >
-                <ListItemText>
-                              Dashboard
-                  </ListItemText>
+            <Link
+              href="/dashboard"
+              passHref
+              style={{ textDecoration: "none", color: "black" }}
+            >
+              <ListItemButton selected={pathname === "/dashboard"}>
+                <ListItemText>Dashboard</ListItemText>
               </ListItemButton>
             </Link>
 
-            <Link href="/livecamera" passHref style={{ textDecoration: "none", color: "black" }}>
-              <ListItemButton
-                selected={pathname === "/livecamera"}
-              >
+            <Link
+              href="/livecamera"
+              passHref
+              style={{ textDecoration: "none", color: "black" }}
+            >
+              <ListItemButton selected={pathname === "/livecamera"}>
                 Live Camera
               </ListItemButton>
             </Link>
 
-            <Link href="/alerts" passHref style={{ textDecoration: "none", color: "black" }}>
-              <ListItemButton selected={pathname === "/alerts"} >
+            <Link
+              href="/alerts"
+              passHref
+              style={{ textDecoration: "none", color: "black" }}
+            >
+              <ListItemButton selected={pathname === "/alerts"}>
                 Alerts
               </ListItemButton>
             </Link>
@@ -114,19 +237,26 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </ListItemButton>
             </Link> */}
 
-            <Link href="/chatbot" passHref style={{ textDecoration: "none", color: "black" }}>
-              <ListItemButton selected={pathname === "/chatbot"} >
+            <Link
+              href="/chatbot"
+              passHref
+              style={{ textDecoration: "none", color: "black" }}
+            >
+              <ListItemButton selected={pathname === "/chatbot"}>
                 ChatBot
               </ListItemButton>
             </Link>
 
-            <Link href="/roleassign" passHref style={{ textDecoration: "none", color: "black" }}>
-              <ListItemButton selected={pathname === "/roleassign"} >
+            <Link
+              href="/roleassign"
+              passHref
+              style={{ textDecoration: "none", color: "black" }}
+            >
+              <ListItemButton selected={pathname === "/roleassign"}>
                 Role Allot
               </ListItemButton>
             </Link>
           </List>
-
         </Drawer>
 
         <Box
@@ -140,6 +270,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {children}
         </Box>
       </Box>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setSnackbarOpen(false)}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMsg}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

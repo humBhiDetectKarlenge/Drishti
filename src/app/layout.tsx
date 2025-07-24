@@ -1,5 +1,8 @@
+import './global.css';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import Providers from './Providers';
+import GoogleTranslate from '../components/GoogleTranslate';
+
 
 export const metadata = {
   title: 'Drishti Dashboard',
@@ -15,6 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {children}
           </Providers>
         </AppRouterCacheProvider>
+        <GoogleTranslate /> 
       </body>
     </html>
   );

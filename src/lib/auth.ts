@@ -17,15 +17,20 @@ export const loginWithGoogle = async () => {
   const docSnap = await getDoc(userRef);
 
   if (!docSnap.exists()) {
-    // Create user only if not exists
-    await setDoc(userRef, {
-      email: user.email,
-      displayName: user.displayName,
-      photoURL: user.photoURL,
-      userType: "crowd", 
-      createdAt: new Date(),
-    });
+    try {
+      await setDoc(userRef, {
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        userType: "crowd", 
+        createdAt: new Date(),
+      });
+      console.log("User created in Firestore");
+    } catch (error) {
+      console.error("Failed to create user in Firestore:", error);
+    }
   }
+  
 
   return user;
 };

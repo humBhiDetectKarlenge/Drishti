@@ -1,0 +1,10 @@
+iframe.skiptranslate {
+    bottom: 0 !important;
+    top: auto !important;
+   
+  }
+  
+  iframe#goog-te-menu-frame {
+    top: 40px !important; 
+    bottom: 0 !important;
+  }

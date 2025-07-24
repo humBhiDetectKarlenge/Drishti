@@ -51,7 +51,7 @@ export default function ChatbotPage() {
           overflowY: "auto",
           p: 2,
           mb: 2,
-          mt:2,
+          mt:8,
           borderRadius: 2,
           display: "flex",
           flexDirection: "column",

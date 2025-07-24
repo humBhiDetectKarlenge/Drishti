@@ -2,6 +2,7 @@ import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
+import { DevBundlerService } from 'next/dist/server/lib/dev-bundler-service';
 
 
 const firebaseConfig = {
@@ -17,8 +18,11 @@ const firebaseConfig = {
 
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
+
+
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+console.log("Firestore connected to project:", app.options.projectId);
 export const storage = getStorage(app);
 
 export {app};
