@@ -16,13 +16,13 @@ const firebaseConfig = {
     measurementId: process.env.NEXT_PUBLIC_MEASUREMENT_ID
   };
 
-const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
+  const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+  
 
 
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-console.log("Firestore connected to project:", app.options.projectId);
 export const storage = getStorage(app);
 
 export {app};

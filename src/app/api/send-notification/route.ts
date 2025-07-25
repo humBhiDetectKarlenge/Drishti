@@ -1,4 +1,3 @@
-// pages/api/send-notification.ts
 import { NextRequest, NextResponse } from "next/server";
 import { fcm } from "@/lib/firebase-admin";
 
@@ -6,8 +5,6 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { token, topic, title, body: msgBody, data } = body;
-
-    // Require either token or
     if ((!token && !topic) || !title || !msgBody) {
       return NextResponse.json(
         {

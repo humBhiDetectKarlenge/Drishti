@@ -19,7 +19,7 @@ export async function GET() {
         priority: data.priority ?? '',
         uuid: data.uuid ?? '',
         description: data.description ?? '',
-        authority: data.authority
+        authority: data.userType
       };
     });
 

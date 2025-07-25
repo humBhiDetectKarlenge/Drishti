@@ -37,10 +37,10 @@ export default function LoginPage() {
 
   return (
     <Container maxWidth="sm" sx={{ mt: 10 }}>
-      <Script
+      {/* <Script
         src={`https://maps.googleapis.com/maps/api/js?key=${process.env.MAPS_API_KEY}`}
         strategy="beforeInteractive"
-      />
+      /> */}
       <Typography variant="h4" gutterBottom>
         Welcome to Drishti
       </Typography>

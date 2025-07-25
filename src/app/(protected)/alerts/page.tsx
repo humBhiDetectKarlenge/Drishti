@@ -12,6 +12,7 @@ import {
   DialogTitle,
   DialogContent,
   Chip,
+  Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
@@ -30,7 +31,7 @@ interface Report {
   };
   issueType: string;
   priority: string;
-  authority: string;
+  userType: string;
   description: string;
   fileUrl?: string;
 }
@@ -43,6 +44,8 @@ export default function AlertTablePage() {
     lng: number;
   } | null>(null);
 
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const fetchReports = async () => {
       try {
@@ -52,106 +55,111 @@ export default function AlertTablePage() {
         setReports(responseJson.reports);
       } catch (error) {
         console.error("Error fetching reports:", error);
+      } finally {
+        setLoading(false);
       }
     };
-  
+
     fetchReports();
   }, []);
-  
 
   const handleViewOnMap = (lat: number, lng: number) => {
+    if (selectedCoords?.lat === lat && selectedCoords?.lng === lng && open)
+      return;
     setSelectedCoords({ lat, lng });
     setOpen(true);
   };
 
-  const getSeverityColor = (priority: string) => {
-    switch (priority.toLowerCase()) {
-      case "critical":
-        return "error";
-      case "high":
-        return "error";
-      case "medium":
-        return "warning";
-      case "low":
-        return "default";
-      default:
-        return "default";
-    }
+  const getSeverityColor = (
+    priority: string
+  ): "error" | "warning" | "default" => {
+    const p = priority.toLowerCase();
+    return p === "critical" || p === "high"
+      ? "error"
+      : p === "medium"
+      ? "warning"
+      : "default";
   };
 
   return (
-    <Box p={3} sx={{mt: 8}}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Issue Type</TableCell>
-            <TableCell>Zone</TableCell>
-            <TableCell>Timestamp</TableCell>
-            <TableCell>Priority</TableCell>
-            <TableCell>Authority</TableCell>
-            <TableCell>Description</TableCell>
-            <TableCell>Attachment</TableCell>
-            <TableCell>Action</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {reports.map((report) => (
-            <TableRow key={report.id} sx={{ height: "40px" }}>
-              <TableCell>{report.issueType}</TableCell>
-              <TableCell>{report.zone}</TableCell>
-              <TableCell>
-  {new Date(report.timestamp).toLocaleString("en-IN", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  })}
-</TableCell>
-
-
-              <TableCell>
-                <Chip
-                  sx={{ mt: 2, p: 0 }}
-                  label={report.priority}
-                  color={getSeverityColor(report.priority)}
-                />
-              </TableCell>
-
-              <TableCell>{report.authority}</TableCell>
-              <TableCell>{report.description}</TableCell>
-              <TableCell>
-                {report.fileUrl ? (
-                  <a
-                    href={report.fileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    View
-                  </a>
-                ) : (
-                  "—"
-                )}
-              </TableCell>
-              <TableCell>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={() =>
-                    handleViewOnMap(
-                      report.coordinates.lat,
-                      report.coordinates.lng
-                    )
-                  }
-                >
-                  View on Map
-                </Button>
-              </TableCell>
+    <Box p={3} sx={{ mt: 8 }}>
+      {!loading && reports.length === 0 && (
+        <Typography>No reports found.</Typography>
+      )}
+      {loading ? (
+        <Typography>Loading reports...</Typography>
+      ) : (
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Issue Type</TableCell>
+              <TableCell>Zone</TableCell>
+              <TableCell>Timestamp</TableCell>
+              <TableCell>Priority</TableCell>
+              <TableCell>Authority</TableCell>
+              <TableCell>Description</TableCell>
+              <TableCell>Attachment</TableCell>
+              <TableCell>Action</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHead>
+          <TableBody>
+            {reports.map((report) => (
+              <TableRow key={report.id} sx={{ height: "40px" }}>
+                <TableCell>{report.issueType}</TableCell>
+                <TableCell>{report.zone}</TableCell>
+                <TableCell>
+                  {new Date(report.timestamp).toLocaleString("en-IN", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                  })}
+                </TableCell>
+
+                <TableCell>
+                  <Chip
+                    sx={{ mt: 2, p: 0 }}
+                    label={report.priority}
+                    color={getSeverityColor(report.priority)}
+                  />
+                </TableCell>
+
+                <TableCell>{report.userType}</TableCell>
+                <TableCell>{report.description}</TableCell>
+                <TableCell>
+                  {report.fileUrl ? (
+                    <a
+                      href={report.fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      View
+                    </a>
+                  ) : (
+                    "—"
+                  )}
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() =>
+                      handleViewOnMap(
+                        report.coordinates.lat,
+                        report.coordinates.lng
+                      )
+                    }
+                  >
+                    View on Map
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
 
       <Dialog
         open={open}

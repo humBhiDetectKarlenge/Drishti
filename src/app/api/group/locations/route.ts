@@ -9,7 +9,8 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const groupRef = Admin.doc(`groups/${groupId}`);
+    const db = Admin;
+    const groupRef = db.doc(`groups/${groupId}`);
     const groupSnap = await groupRef.get();
 
     if (!groupSnap.exists) {
@@ -21,26 +22,24 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ success: false, message: 'Invalid group data' }, { status: 500 });
     }
 
-    const memberIds: string[] = [groupData.creatorId, ...(groupData.memberIds || [])];
+    const memberIds: string[] = [...groupData.memberIds];
 
-    const userRefs = memberIds.map(id => Admin.doc(`users/${id}`));
-    const userDocs = await Admin.getAll(...userRefs);
+    const userRefs = memberIds.map(id => db.doc(`users/${id}`));
+    const userDocs = await db.getAll(...userRefs);
 
-    const coordinates = userDocs.map(doc => {
-        const data = doc.exists ? doc.data() : null;
-        const coordinate = data?.coordinates;
-      
-        return {
-          userId: doc.id,
-          coordinate: coordinate && coordinate.lat !== undefined && coordinate.lng !== undefined
-            ? { lat: coordinate.lat, lng: coordinate.lng }
+    const result = userDocs.map(doc => {
+      const data = doc.exists ? doc.data() : null;
+
+      return {
+        email: data?.email || null,
+        coordinate:
+          data?.coordinates?.lat !== undefined && data?.coordinates?.lng !== undefined
+            ? { lat: data.coordinates.lat, lng: data.coordinates.lng }
             : null,
-        };
-      });
-      
-      
+      };
+    });
 
-    return NextResponse.json({ success: true, data: coordinates }, { status: 200 });
+    return NextResponse.json({ success: true, data: result }, { status: 200 });
   } catch (error) {
     console.error('Error fetching members by groupId:', error);
     return NextResponse.json({ success: false, message: 'Internal server error', error: String(error) }, { status: 500 });
