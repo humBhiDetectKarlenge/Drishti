@@ -17,7 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 import { FcGoogle } from "react-icons/fc";
-import { keyframes } from "@emotion/react";
+import { keyframes } from '@emotion/react';
 
 const float = keyframes`
   0%, 100% {
@@ -28,8 +28,9 @@ const float = keyframes`
   }
 `;
 
+
 const stats = [
-  { label: "Incidents Prevented", value: 2300 },``
+  { label: "Incidents Prevented", value: 2300 },
   { label: "Cities Covered", value: 42 },
   { label: "24/7 Active Hours", value: 8760 },
 ];
@@ -143,6 +144,8 @@ export default function Home() {
             animation: `${float} 20s ease-in-out infinite`,
           }}
         >
+
+          
           <Typography variant="h1" fontWeight="bold" gutterBottom>
             Smart Crowd Management for Safer Events
           </Typography>
@@ -171,34 +174,14 @@ export default function Home() {
             </Button>
             <Button
               variant="outlined"
-              component="a"
-              href="public/01_hbdkl_mobile.apk"
-              download
               sx={{
                 borderRadius: 8,
                 px: 4,
                 color: "#ff5f8f",
                 borderColor: "#ff5f8f",
-                textDecoration: "none",
               }}
             >
-              Download the Mobile App
-            </Button>
-
-            <Button
-              variant="outlined"
-              component="a"
-              href="public/01_hbdkl_watch.apk"
-              download
-              sx={{
-                borderRadius: 8,
-                px: 4,
-                color: "#ff5f8f",
-                borderColor: "#ff5f8f",
-                textDecoration: "none",
-              }}
-            >
-              Download the Watch App
+              Download the App
             </Button>
           </Stack>
         </Container>
@@ -233,7 +216,10 @@ export default function Home() {
         </Typography>
         <Box sx={{ display: "flex", gap: "32px", mb: "32px" }}>
           {features.slice(0, 3).map((feature) => (
-            <Box key={feature.title} flex={1}>
+            <Box
+              key={feature.title}
+              flex={1}
+            >
               <Card
                 sx={{
                   borderRadius: 4,
@@ -269,8 +255,7 @@ export default function Home() {
                       fontSize: "2rem",
                       color: "#6366f1",
                     }}
-                  >
-                    ``
+                  >``
                     {feature.icon}``
                   </Typography>
                   <Typography
@@ -345,6 +330,8 @@ export default function Home() {
             </Box>
           ))}
         </Box>
+
+       
       </Container>
       <Box sx={{ textAlign: "center", py: 10, backgroundColor: "#fff" }}>
         <Container maxWidth="md">
@@ -357,9 +344,9 @@ export default function Home() {
             Ready to Transform Your Crowd Management?
           </Typography>
           <Typography color="text.secondary" sx={{ mb: 4 }}>
-            Join event organizers, venue managers, and security professionals
-            who trust Drishti to keep their crowds safe and events running
-            smoothly.
+            Join event organizers, venue managers, and security
+            professionals who trust Drishti to keep their crowds safe and
+            events running smoothly.
           </Typography>
           <Button
             variant="contained"
