@@ -19,7 +19,9 @@ export async function GET() {
         priority: data.priority ?? '',
         uuid: data.uuid ?? '',
         description: data.description ?? '',
-        authority: data.userType
+        authority: data.userType,
+        issueType: data.issueType
+
       };
     });
 

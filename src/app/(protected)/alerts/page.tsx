@@ -32,7 +32,7 @@ interface Report {
   };
   issueType: string;
   priority: string;
-  userType: string;
+  authority: string;
   description: string;
   fileUrl?: string;
 }
@@ -82,6 +82,8 @@ export default function AlertTablePage() {
       : "default";
   };
 
+  console.log(reports)
+
   return (
     <Box p={3} sx={{ mt: 8 }}>
       {!loading && reports.length === 0 && (
@@ -130,7 +132,7 @@ export default function AlertTablePage() {
                     />
                   </TableCell>
 
-                  <TableCell>{report.userType}</TableCell>
+                  <TableCell>{report.authority}</TableCell>
                   <TableCell>{report.description}</TableCell>
                   <TableCell>
                     {report.fileUrl ? (

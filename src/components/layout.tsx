@@ -21,6 +21,7 @@ import {
   FormControl,
   InputLabel,
   ListItemIcon,
+  Tooltip,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { usePathname } from "next/navigation";
@@ -34,6 +35,7 @@ import Link from "next/link";
 import EditNotificationsIcon from "@mui/icons-material/EditNotifications";
 import { Snackbar, Alert } from "@mui/material";
 import { resolve } from "path";
+import ArticleIcon from '@mui/icons-material/Article';
 
 import Dashboard from "@mui/icons-material/Dashboard";
 import { MdOutlineDashboard, MdOutlinePeople } from "react-icons/md";
@@ -41,9 +43,6 @@ import { PiMapPinArea } from "react-icons/pi";
 import { TbAlertSquare, TbMessageChatbot } from "react-icons/tb";
 import { BiCctv } from "react-icons/bi";
 const drawerWidth = 240;
-
-
-
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -94,9 +93,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <EditNotificationsIcon />
             </IconButton> */}
 
-            <IconButton onClick={logout} color="inherit">
-              <LogoutIcon />
-            </IconButton>
+<Tooltip title="User Manual">
+              <IconButton color="inherit">
+
+            <ArticleIcon/>          </IconButton>
+            </Tooltip>
+
+            <Tooltip title="Logout">
+              <IconButton onClick={logout} color="inherit">
+                <LogoutIcon />
+              </IconButton>
+            </Tooltip>
           </Box>
         </Toolbar>
       </AppBar>

@@ -78,6 +78,7 @@ const HeatmapMap = () => {
   );
 
   const markerUsers = users.filter((user) => user.userType !== "crowd");
+  console.log(markerUsers);
 
   useEffect(() => {
     if (!mapRef.current || users.length === 0 || !window.google?.maps?.LatLngBounds) return;
