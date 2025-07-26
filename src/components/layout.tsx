@@ -36,11 +36,14 @@ import { Snackbar, Alert } from "@mui/material";
 import { resolve } from "path";
 
 import Dashboard from "@mui/icons-material/Dashboard";
-import { MdOutlinePeople } from "react-icons/md";
+import { MdOutlineDashboard, MdOutlinePeople } from "react-icons/md";
 import { PiMapPinArea } from "react-icons/pi";
 import { TbAlertSquare, TbMessageChatbot } from "react-icons/tb";
 import { BiCctv } from "react-icons/bi";
 const drawerWidth = 240;
+
+
+
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -84,12 +87,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </Avatar>
             )}
 
-            <IconButton
+            {/* <IconButton
               color="inherit"
               onClick={() => setNotifDrawerOpen(true)}
             >
               <EditNotificationsIcon />
-            </IconButton>
+            </IconButton> */}
 
             <IconButton onClick={logout} color="inherit">
               <LogoutIcon />
@@ -98,7 +101,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </Toolbar>
       </AppBar>
 
-      <Drawer
+      {/* <Drawer
         anchor="right"
         open={notifDrawerOpen}
         onClose={() => setNotifDrawerOpen(false)}
@@ -191,7 +194,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </Button>
           </Stack>
         </Box>
-      </Drawer>
+      </Drawer> */}
 
       <Box sx={{ display: "flex", flexGrow: 1 }}>
         <Drawer
@@ -218,7 +221,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 selected={pathname === "/dashboard"}
                 sx={{ display: "flex", gap: 2 }}
               >
-                <Dashboard />
+                <MdOutlineDashboard />
                 <ListItemText>Dashboard</ListItemText>
               </ListItemButton>
             </Link>
@@ -299,7 +302,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 sx={{ display: "flex", gap: 2 }}
               >
                 <MdOutlinePeople />
-                <ListItemText> Role Allot</ListItemText>
+                <ListItemText> UAM </ListItemText>
               </ListItemButton>
             </Link>
           </List>
@@ -310,7 +313,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           sx={{
             flexGrow: 1,
             bgcolor: "#fafafa",
-            p: 3,
+            p: 2,
           }}
         >
           {children}

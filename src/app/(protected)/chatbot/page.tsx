@@ -2,24 +2,28 @@
 
 import { Box, Button, Paper, TextField } from "@mui/material";
 import { useState, useEffect, useRef } from "react";
-import SendIcon from '@mui/icons-material/Send';
+import SendIcon from "@mui/icons-material/Send";
 
 type Message = {
   sender: "user" | "bot";
-  text: string;
+  text: string | null;
 };
 
 export default function ChatbotPage() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [accessToken, setaccessToken] = useState("");
 
-  const accessToken = "ya29.a0AS3H6Nzp-NhDt8XEzk1kO0Y3K3PE10GOt2PAhLAByvRM-LiCWZEMUzTMLA01C3x34TsMbqHRmNWTRuz8PR0alWsAQMLxo4S8lF5tORCZGLQk9gcVRBeQoyMil_uJwmg8OApYrFWJwQW9n4ZzMqPJ3WqheIa9__gD0NfV84N9MzdrK0oaCgYKAZsSARcSFQHGX2MihwA1Mrqnbq9VHSKvH22L3Q0182"
+  var markdown = require("markdown").markdown;
+
+  // const accessToken =
+  //   "ya29.a0AS3H6Nz40iompCFvD99PJl_WmWWS87v3ssaXvyGj_Ad4GxH2SX3fTzHnYwCHqqubnHZ4atl2mfv9D4szU6PdfI83hfB0z6ClC7E2A9itJPJqogMWijvYy-zX562_ojSvGkBGpnXmC7J8rYL9D6FZgOYchkpmSCfh8v0dHpPjoTBPNTIaCgYKAX0SARcSFQHGX2MiFw9j60ejtJDxApHp6aIypg0182";
   const projectId = "tokyo-unity-466206-g8";
   const location = "us-central1";
-  const reasoningEngineId = "3261828787146326016"; 
-  const userId = "user-1";
+  const reasoningEngineId = "7746851066053918720";
 
   useEffect(() => {
     scrollRef.current?.scrollTo({
@@ -29,33 +33,115 @@ export default function ChatbotPage() {
   }, [messages]);
 
   useEffect(() => {
-    const createSession = async () => {
+    const userkiid = crypto.randomUUID();
+    setUserId(userkiid);
+
+    async function startSessionFlow() {
       try {
+        const res = await fetch("/api/gcloudToken");
+        const data = await res.json();
+
+        if (!res.ok) {
+          console.error("Error fetching token:", data.error);
+          return;
+        }
+
+        const token = data.token;
+        setaccessToken(token);
+
+        // ✅ Now create the session with the valid token
         const response = await fetch(
           `https://${location}-aiplatform.googleapis.com/v1beta1/projects/${projectId}/locations/${location}/reasoningEngines/${reasoningEngineId}/sessions`,
           {
             method: "POST",
             headers: {
-              Authorization: `Bearer ${accessToken}`,
+              Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ userId }),
+            body: JSON.stringify({ userId: userkiid }),
           }
         );
 
-        const data = await response.json();
-        if (!response.ok) throw new Error(JSON.stringify(data));
-        const id = data.name.split("/").pop();
-        // setSessionId(id);
-        setSessionId('8699347543835803648');
-        console.log("Session ID:", id);
-      } catch (err) {
-        console.error("Error creating session:", err);
-      }
-    };
+        const sessionData = await response.json();
+        if (!response.ok) throw new Error(JSON.stringify(sessionData));
 
-    createSession();
+        const sessionMatch = sessionData.name.match(/\/sessions\/([^/]+)/);
+        const sessionId = sessionMatch ? sessionMatch[1] : null;
+        setSessionId(sessionId);
+        console.log("Session ID:", sessionId);
+      } catch (err) {
+        console.error("Session flow error:", err);
+      }
+    }
+
+    startSessionFlow();
   }, []);
+
+  // useEffect(() => {
+  //   const userkiid = crypto.randomUUID();
+  //   console.log(userkiid);
+  //   setUserId(userkiid);
+  //   async function fetchToken() {
+  //     try {
+  //       const res = await fetch('/api/gcloudToken');
+  //       const data = await res.json();
+  //       if (res.ok) {
+  //         setaccessToken(data.token);
+  //       } else {
+  //         console.error('Error fetching token:', data.error);
+  //       }
+  //     } catch (err) {
+  //       console.error('Network error:', err);
+  //     }
+  //   }
+
+  //   const createSession = async () => {
+  //     try {
+  //       const response = await fetch(
+  //         `https://${location}-aiplatform.googleapis.com/v1beta1/projects/${projectId}/locations/${location}/reasoningEngines/${reasoningEngineId}/sessions`,
+  //         {
+  //           method: "POST",
+  //           headers: {
+  //             Authorization: `Bearer ${accessToken}`,
+  //             "Content-Type": "application/json",
+  //           },
+  //           body: JSON.stringify({ userId: userkiid }),
+  //         }
+  //       );
+
+  //       const data = await response.json();
+  //       if (!response.ok) throw new Error(JSON.stringify(data));
+  //       const sessionMatch = data.name.match(/\/sessions\/([^/]+)/);
+  //       const sessionId = sessionMatch ? sessionMatch[1] : null;
+
+  //       setSessionId(sessionId);
+  //       console.log("Session ID:", sessionId);
+  //     } catch (err) {
+  //       console.error("Error creating session:", err);
+  //     }
+  //   };
+
+  //   fetchToken();
+
+  //   createSession();
+  // }, []);
+
+  async function extractBotText(response: Response) {
+    const raw = await response.text();
+    console.log("Raw response:", raw);
+
+    console.log(typeof raw);
+
+    const match =
+      raw.match(/"text"\s*:\s*"((?:\\.|[^"\\])*)"/) ||
+      raw.match(/"context"\s*:\s*"((?:\\.|[^"\\])*)"/);
+
+    if (match && match[1]) {
+      return match[1].replace(/\\"/g, '"');
+    }
+
+    return null;
+  }
 
   const handleSend = async () => {
     if (!input.trim()) {
@@ -66,13 +152,13 @@ export default function ChatbotPage() {
       console.error("Session ID is not available. Cannot send message.");
       return;
     }
-  
+
     const userText = input.trim();
     console.log("User input:", userText);
     setInput("");
     setMessages((prev) => [...prev, { sender: "user", text: userText }]);
     console.log("User message added to chat");
-  
+
     try {
       console.log("Sending request to Vertex AI Reasoning Engine...");
       const response = await fetch(
@@ -93,33 +179,32 @@ export default function ChatbotPage() {
           }),
         }
       );
-  
 
-  
       if (!response.ok || !response.body) {
         throw new Error("Failed to stream response from Vertex AI.");
       }
-      console.log(JSON.stringify(response))
-  
-      const reader = response.body.getReader();
-      console.log("Response status:", reader);
 
-      const decoder = new TextDecoder("utf-8");
-      console.log("Response status:", decoder);
+      const botText = await extractBotText(response);
+      const parser = new DOMParser();
+      const finalBotText: string = botText
+  ? parser
+      .parseFromString(botText, "text/html")
+      .body.textContent?.replace(/[\n*]/g, "") || ""
+  : "";
 
-      let botText = "";
-  
-  
-      
+
+      setMessages((prev) => [
+        ...prev,
+        { sender: "bot", text: finalBotText ?? "Sorry I could not fetch a response at this time! Please check your connection and try again!" },
+      ]);
     } catch (err) {
       console.error("Streaming error:", err);
       setMessages((prev) => [
         ...prev,
-        { sender: "bot", text: "❌ Error getting response from Vertex AI." },
+        { sender: "bot", text: "Error getting response from Vertex AI." },
       ]);
     }
   };
-  
 
   return (
     <Box
@@ -169,7 +254,7 @@ export default function ChatbotPage() {
         ))}
       </Paper>
 
-      <Box sx={{ display: "flex", gap: 1, width: "70%" }}>
+      <Box sx={{ display: "flex", gap: 1, width: "80%" }}>
         <TextField
           fullWidth
           variant="outlined"
@@ -178,7 +263,11 @@ export default function ChatbotPage() {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSend()}
         />
-        <Button variant="contained" onClick={handleSend} sx={{ minWidth: "50px", p: 1 }}>
+        <Button
+          variant="contained"
+          onClick={handleSend}
+          sx={{ minWidth: "50px", p: 1 }}
+        >
           <SendIcon />
         </Button>
       </Box>
