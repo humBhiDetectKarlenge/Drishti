@@ -20,6 +20,7 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  ListItemIcon,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { usePathname } from "next/navigation";
@@ -34,6 +35,11 @@ import EditNotificationsIcon from "@mui/icons-material/EditNotifications";
 import { Snackbar, Alert } from "@mui/material";
 import { resolve } from "path";
 
+import Dashboard from "@mui/icons-material/Dashboard";
+import { MdOutlinePeople } from "react-icons/md";
+import { PiMapPinArea } from "react-icons/pi";
+import { TbAlertSquare, TbMessageChatbot } from "react-icons/tb";
+import { BiCctv } from "react-icons/bi";
 const drawerWidth = 240;
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -172,10 +178,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   setNotifDrawerOpen(false);
                   setNotifTitle("");
                   setNotifBody("");
-                } catch (err: any) {
-                  setSnackbarMsg(err.message);
-                  setSnackbarSeverity("error");
-                  setSnackbarOpen(true);
+                } catch (err) {
+                  if (err instanceof Error) {
+                    setSnackbarMsg(err.message);
+                    setSnackbarSeverity("error");
+                    setSnackbarOpen(true);
+                  }
                 }
               }}
             >
@@ -206,7 +214,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               passHref
               style={{ textDecoration: "none", color: "black" }}
             >
-              <ListItemButton selected={pathname === "/dashboard"}>
+              <ListItemButton
+                selected={pathname === "/dashboard"}
+                sx={{ display: "flex", gap: 2 }}
+              >
+                <Dashboard />
                 <ListItemText>Dashboard</ListItemText>
               </ListItemButton>
             </Link>
@@ -216,8 +228,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               passHref
               style={{ textDecoration: "none", color: "black" }}
             >
-              <ListItemButton selected={pathname === "/livecamera"}>
-                Live Camera
+              <ListItemButton
+                selected={pathname === "/livecamera"}
+                sx={{ display: "flex", gap: 2 }}
+              >
+                <BiCctv />
+
+                <ListItemText> Live Camera</ListItemText>
               </ListItemButton>
             </Link>
 
@@ -226,8 +243,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               passHref
               style={{ textDecoration: "none", color: "black" }}
             >
-              <ListItemButton selected={pathname === "/alerts"}>
-                Alerts
+              <ListItemButton
+                selected={pathname === "/alerts"}
+                sx={{ display: "flex", gap: 2 }}
+              >
+                <TbAlertSquare />
+
+                <ListItemText> Alerts</ListItemText>
               </ListItemButton>
             </Link>
 
@@ -242,8 +264,28 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               passHref
               style={{ textDecoration: "none", color: "black" }}
             >
-              <ListItemButton selected={pathname === "/chatbot"}>
-                ChatBot
+              <ListItemButton
+                selected={pathname === "/chatbot"}
+                sx={{ display: "flex", gap: 2 }}
+              >
+                <TbMessageChatbot />
+
+                <ListItemText> ChatBot</ListItemText>
+              </ListItemButton>
+            </Link>
+
+            <Link
+              href="/zonestatus"
+              passHref
+              style={{ textDecoration: "none", color: "black" }}
+            >
+              <ListItemButton
+                selected={pathname === "/zonestatus"}
+                sx={{ display: "flex", gap: 2 }}
+              >
+                <PiMapPinArea />
+
+                <ListItemText> Zone Management</ListItemText>
               </ListItemButton>
             </Link>
 
@@ -252,8 +294,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               passHref
               style={{ textDecoration: "none", color: "black" }}
             >
-              <ListItemButton selected={pathname === "/roleassign"}>
-                Role Allot
+              <ListItemButton
+                selected={pathname === "/roleassign"}
+                sx={{ display: "flex", gap: 2 }}
+              >
+                <MdOutlinePeople />
+                <ListItemText> Role Allot</ListItemText>
               </ListItemButton>
             </Link>
           </List>

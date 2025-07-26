@@ -2,23 +2,67 @@
 
 import dynamic from "next/dynamic";
 import { useAuth } from "../../../components/AuthProvider";
-import { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Typography, Box, CircularProgress, Paper } from "@mui/material";
+import EmergencyControls from "@/components/EmergencyControls";
+import TopAlerts from "@/components/TopAlerts";
+import ZoneManagement from "@/components/ZoneManagement";
+import NotificationDialogLauncher from "@/components/NotificationDialogLauncher";
 
 const HeatmapMap = dynamic(() => import("@/components/HeatmapMap"), {
   ssr: false,
 });
 
+type RoleCounts = {
+  [key: string]: number;
+};
+
 export default function DashboardPage() {
   const { user } = useAuth();
   const router = useRouter();
+  const [counts, setCounts] = useState<RoleCounts | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const roleDisplayMap: Record<
+    string,
+    { label: string; match: string; color: string }
+  > = {
+    crowd: { label: "Total Attendees", match: "crowd", color: "#e3f2fd" },
+    police: { label: "On-Field Patrol", match: "police", color: "#fff3e0" },
+    doctor: { label: "Medical Responders", match: "doctor", color: "#e8f5e9" },
+    help: { label: "Emergency Responders", match: "help", color: "#fce4ec" },
+    security: { label: "Field Guards", match: "security", color: "#ede7f6" },
+  };
 
   useEffect(() => {
     if (!user) {
       router.push("/");
     }
   }, [user, router]);
+
+  useEffect(() => {
+    const fetchCounts = async () => {
+      try {
+        const res = await fetch("/api/authority-count");
+        const data = await res.json();
+
+        if (data.success) {
+          setCounts(data.data);
+        } else {
+          setError(data.message || "Failed to fetch counts");
+        }
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err.message || "Unexpected error");
+        }
+      }
+    };
+
+    fetchCounts();
+  }, []);
+
+  {console.log(JSON.stringify(counts))}
 
   if (!user)
     return (
@@ -35,41 +79,44 @@ export default function DashboardPage() {
     );
 
   return (
-    <Box sx={{ p: 2 }}>
-      <Paper sx={{ p: 2, mb: 2, mt:8 }}>
+    <Box>
+      <Paper sx={{ p: 2, mb: 2, mt: 8 }}>
         <Typography variant="h5" gutterBottom>
           People Stats
         </Typography>
         <Box
           sx={{
             display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
+            gridTemplateColumns: "repeat(5, 1fr)",
             gap: 4,
           }}
         >
-          {[
-            { label: "Total Attendees", value: "676,8979", color: "#e3f2fd" },
-            { label: "Total Commanders", value: "23", color: "#fce4ec" },
-            { label: "Emergency Responders", value: "300", color: "#e8f5e9" },
-            { label: "Field Guards", value: "2300", color: "#fff3e0" },
-          ].map((item) => (
-            <Paper
-              key={item.label}
-              sx={{
-                p: 2,
-                textAlign: "center",
-                backgroundColor: item.color,
-                boxShadow: 2,
-                borderRadius: 2,
-              }}
-            >
-              <Typography variant="h5">{item.value}</Typography>
-              <Typography variant="body2">{item.label}</Typography>
-            </Paper>
-          ))}
+         
+
+          {counts &&
+            [
+              ...Object.entries(counts).map(([role, count]) => ({
+                label: roleDisplayMap[role]?.label,
+                value: count,
+                color: roleDisplayMap[role]?.color,
+              })),
+            ].map((item) => (
+              <Paper
+                key={item.label}
+                sx={{
+                  p: 2,
+                  textAlign: "center",
+                  backgroundColor: item.color,
+                  boxShadow: 2,
+                  borderRadius: 2,
+                }}
+              >
+                <Typography variant="h5">{item.value}</Typography>
+                <Typography variant="body2">{item.label}</Typography>
+              </Paper>
+            ))}
         </Box>
       </Paper>
-
       <Paper sx={{ p: 2, mb: 2 }}>
         <Typography variant="h6" gutterBottom>
           Zone Status
@@ -140,9 +187,23 @@ export default function DashboardPage() {
           ))}
         </Box>
       </Paper>
+      
+      <Paper sx={{ display: "flex", gap: 2, backgroundColor: "transparent" }}>
+        <Paper sx={{ p: 2, flex: 2 }}>
+          <HeatmapMap />
+        </Paper>
 
+        <Paper sx={{ p: 2, flex: 1 }}>
+          <TopAlerts />
+        </Paper>
+      </Paper>
       <Paper sx={{ p: 2 }}>
-        <HeatmapMap />
+        {" "}
+        <EmergencyControls />{" "}
+      </Paper>{" "}
+      <Paper sx={{ p: 2 }}>
+        {" "}
+        <ZoneManagement />{" "}
       </Paper>
     </Box>
   );

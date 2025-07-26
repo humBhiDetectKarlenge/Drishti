@@ -4,6 +4,7 @@ import { useAuth } from '@/components/AuthProvider';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import Layout from '@/components/layout'; 
+import NotificationDialogLauncher from '@/components/NotificationDialogLauncher';
 
 export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -17,5 +18,7 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
 
   if (loading || !user) return null;
 
-  return <Layout>{children}</Layout>;
+  return <Layout>{children}
+        <NotificationDialogLauncher />
+</Layout>;
 }

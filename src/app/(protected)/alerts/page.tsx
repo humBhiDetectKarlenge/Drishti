@@ -13,6 +13,7 @@ import {
   DialogContent,
   Chip,
   Typography,
+  Paper,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
@@ -89,76 +90,80 @@ export default function AlertTablePage() {
       {loading ? (
         <Typography>Loading reports...</Typography>
       ) : (
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Issue Type</TableCell>
-              <TableCell>Zone</TableCell>
-              <TableCell>Timestamp</TableCell>
-              <TableCell>Priority</TableCell>
-              <TableCell>Authority</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>Attachment</TableCell>
-              <TableCell>Action</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {reports.map((report) => (
-              <TableRow key={report.id} sx={{ height: "40px" }}>
-                <TableCell>{report.issueType}</TableCell>
-                <TableCell>{report.zone}</TableCell>
-                <TableCell>
-                  {new Date(report.timestamp).toLocaleString("en-IN", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: true,
-                  })}
-                </TableCell>
+        <>
+         
 
-                <TableCell>
-                  <Chip
-                    sx={{ mt: 2, p: 0 }}
-                    label={report.priority}
-                    color={getSeverityColor(report.priority)}
-                  />
-                </TableCell>
-
-                <TableCell>{report.userType}</TableCell>
-                <TableCell>{report.description}</TableCell>
-                <TableCell>
-                  {report.fileUrl ? (
-                    <a
-                      href={report.fileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      View
-                    </a>
-                  ) : (
-                    "—"
-                  )}
-                </TableCell>
-                <TableCell>
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    onClick={() =>
-                      handleViewOnMap(
-                        report.coordinates.lat,
-                        report.coordinates.lng
-                      )
-                    }
-                  >
-                    View on Map
-                  </Button>
-                </TableCell>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Issue Type</TableCell>
+                <TableCell>Zone</TableCell>
+                <TableCell>Timestamp</TableCell>
+                <TableCell>Priority</TableCell>
+                <TableCell>Authority</TableCell>
+                <TableCell>Description</TableCell>
+                <TableCell>Attachment</TableCell>
+                <TableCell>Action</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHead>
+            <TableBody>
+              {reports.map((report) => (
+                <TableRow key={report.id} sx={{ height: "40px" }}>
+                  <TableCell>{report.issueType}</TableCell>
+                  <TableCell>{report.zone}</TableCell>
+                  <TableCell>
+                    {new Date(report.timestamp).toLocaleString("en-IN", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: true,
+                    })}
+                  </TableCell>
+
+                  <TableCell>
+                    <Chip
+                      sx={{ mt: 2, p: 0 }}
+                      label={report.priority}
+                      color={getSeverityColor(report.priority)}
+                    />
+                  </TableCell>
+
+                  <TableCell>{report.userType}</TableCell>
+                  <TableCell>{report.description}</TableCell>
+                  <TableCell>
+                    {report.fileUrl ? (
+                      <a
+                        href={report.fileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        View
+                      </a>
+                    ) : (
+                      "—"
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      onClick={() =>
+                        handleViewOnMap(
+                          report.coordinates.lat,
+                          report.coordinates.lng
+                        )
+                      }
+                    >
+                      View on Map
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </>
       )}
 
       <Dialog

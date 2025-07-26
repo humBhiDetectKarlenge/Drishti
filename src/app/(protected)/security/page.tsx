@@ -178,11 +178,11 @@ export default function SecurityPage() {
           onChange={handleChange}
         />
 
-        {/* <input
+        <input
           type="file"
           accept="image/*,video/*"
           onChange={handleFileChange}
-        /> */}
+        />
 
         <Button variant="contained" type="submit">
           Submit Report
