@@ -34,6 +34,7 @@ const HeatmapMap = () => {
   const [users, setUsers] = useState<UserData[]>([]);
   const mapRef = useRef<google.maps.Map | null>(null);
 
+  // Fetch users from Firestore
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -63,36 +64,41 @@ const HeatmapMap = () => {
     fetchData();
   }, []);
 
-  const heatmapData = useMemo(
-    () =>
-      users
-        .filter((user) => user.userType === "crowd")
-        .map(
-          (user) =>
-            new window.google.maps.LatLng(
-              user.coordinates.lat,
-              user.coordinates.lng
-            )
-        ),
-    [users]
-  );
+  // ✅ Safe memo for heatmap data
+  const heatmapData = useMemo(() => {
+    if (!isLoaded) return [];
+
+    return users
+      .filter((user) => user.userType === "crowd")
+      .map(
+        (user) =>
+          new window.google.maps.LatLng(
+            user.coordinates.lat,
+            user.coordinates.lng
+          )
+      );
+  }, [users, isLoaded]);
 
   const markerUsers = users.filter((user) => user.userType !== "crowd");
 
+  // ✅ Fit bounds once map and users are ready
   useEffect(() => {
-    if (!mapRef.current || users.length === 0 || !window.google?.maps?.LatLngBounds) return;
-  
+    if (!isLoaded || !mapRef.current || users.length === 0) return;
+
     const bounds = new window.google.maps.LatLngBounds();
-  
+
     users.forEach((user) => {
       bounds.extend(
-        new window.google.maps.LatLng(user.coordinates.lat, user.coordinates.lng)
+        new window.google.maps.LatLng(
+          user.coordinates.lat,
+          user.coordinates.lng
+        )
       );
     });
-  
+
     mapRef.current.fitBounds(bounds);
-  }, [users]);
-  
+  }, [users, isLoaded]);
+
   if (!isLoaded) return <p>Loading map...</p>;
 
   return (
@@ -103,14 +109,16 @@ const HeatmapMap = () => {
         zoom={14}
         onLoad={(map: google.maps.Map) => {
           mapRef.current = map;
-        }}      >
+        }}
+      >
+        {/* Heatmap for crowd users */}
         {heatmapData.length > 0 && <HeatmapLayer data={heatmapData} />}
 
+        {/* Markers for other users */}
         {markerUsers.map((user, idx) => (
           <Marker
             key={idx}
             position={user.coordinates}
-          
             icon={{
               path: window.google.maps.SymbolPath.CIRCLE,
               scale: 8,
@@ -120,12 +128,11 @@ const HeatmapMap = () => {
               strokeColor: "white",
             }}
           />
-        
         ))}
       </GoogleMap>
 
-      
-       <div
+      {/* Legend */}
+      <div
         style={{
           position: "absolute",
           top: 0,
@@ -140,14 +147,15 @@ const HeatmapMap = () => {
       >
         <strong>Legend:</strong>
         <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
-          {Object.entries(ROLE_COLORS).map(([role, label]) => (
-            <li key={role}>📍 {label}</li>
+          {Object.entries(ROLE_COLORS).map(([role, color]) => (
+            <li key={role}>
+              📍 <span style={{ color }}>{role}</span>
+            </li>
           ))}
         </ul>
       </div>
     </div>
   );
 };
-
 
 export default HeatmapMap;
