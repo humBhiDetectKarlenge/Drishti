@@ -128,9 +128,9 @@ export default function ChatbotPage() {
 
   async function extractBotText(response: Response) {
     const raw = await response.text();
-    console.log("Raw response:", raw);
+    // console.log("Raw response:", raw);
 
-    console.log(typeof raw);
+    // console.log(typeof raw);
 
     const match =
       raw.match(/"text"\s*:\s*"((?:\\.|[^"\\])*)"/) ||
@@ -154,13 +154,13 @@ export default function ChatbotPage() {
     }
 
     const userText = input.trim();
-    console.log("User input:", userText);
+    // console.log("User input:", userText);
     setInput("");
     setMessages((prev) => [...prev, { sender: "user", text: userText }]);
-    console.log("User message added to chat");
+    // console.log("User message added to chat");
 
     try {
-      console.log("Sending request to Vertex AI Reasoning Engine...");
+      // console.log("Sending request to Vertex AI Reasoning Engine...");
       const response = await fetch(
         `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/reasoningEngines/${reasoningEngineId}:streamQuery?alt=sse`,
         {
@@ -188,9 +188,9 @@ export default function ChatbotPage() {
       const parser = new DOMParser();
       const finalBotText: string = botText
   ? parser
-      .parseFromString(botText, "text/html")
+      .parseFromString(botText, "text/html") 
       .body.textContent?.replace(/[\n*]/g, "") || ""
-  : "";
+  : "Sorry I could not fetch a response at this time! Please check your connection and try again!";
 
 
       setMessages((prev) => [

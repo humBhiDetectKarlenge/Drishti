@@ -24,7 +24,7 @@ export const loginWithGoogle = async () => {
         userType: "crowd", 
         createdAt: new Date(),
       });
-      console.log("User created in Firestore");
+      // console.log("User created in Firestore");
     } catch (error) {
       console.error("Failed to create user in Firestore:", error);
     }

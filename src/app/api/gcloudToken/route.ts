@@ -7,7 +7,7 @@ const execAsync = promisify(exec);
 export async function GET(req: NextRequest) {
   try {
     const { stdout } = await execAsync('gcloud auth print-access-token');
-    console.log(stdout)
+    // console.log(stdout)
     return NextResponse.json({ token: stdout.trim() });
   } catch (err: any) {
     console.error('Failed to get access token:', err);

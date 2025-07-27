@@ -82,7 +82,7 @@ export default function AlertTablePage() {
       : "default";
   };
 
-  console.log(reports)
+  // console.log(reports)
 
   return (
     <Box p={3} sx={{ mt: 8 }}>

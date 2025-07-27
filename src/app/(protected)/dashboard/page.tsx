@@ -9,10 +9,20 @@ import EmergencyControls from "@/components/EmergencyControls";
 import TopAlerts from "@/components/TopAlerts";
 import ZoneManagement from "@/components/ZoneManagement";
 import NotificationDialogLauncher from "@/components/NotificationDialogLauncher";
+import { collection, getDocs } from "@firebase/firestore";
+import { db } from "@/firebase/config";
+import { FaFire } from "react-icons/fa";
+import { MdOutlineSentimentSatisfied } from "react-icons/md";
 
 const HeatmapMap = dynamic(() => import("@/components/HeatmapMap"), {
   ssr: false,
 });
+
+interface CameraValue {
+  crowdSentiment: string;
+  isFire: string;
+  peopleCount: number;
+}
 
 type RoleCounts = {
   [key: string]: number;
@@ -23,6 +33,9 @@ export default function DashboardPage() {
   const router = useRouter();
   const [counts, setCounts] = useState<RoleCounts | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [peopleCount, setPeopleCount] = useState<number | null>(0);
+  const [isFire, setIsFire] = useState<string | null>(null);
+  const [crowdSentiment, setCrowdSentiment] = useState<string | null>(null);
 
   const roleDisplayMap: Record<
     string,
@@ -40,6 +53,33 @@ export default function DashboardPage() {
       router.push("/");
     }
   }, [user, router]);
+
+  useEffect(() => {
+    const fetchCameraDetails = async () => {
+      try {
+        const snapshot = await getDocs(collection(db, "camera_detections"));
+        const fetched: CameraValue[] = snapshot.docs.map((docSnap) => {
+          const data = docSnap.data();
+          return {
+            crowdSentiment: data.crowd_sentiment,
+            isFire: data.is_fire,
+            peopleCount: data.people_count,
+          };
+        });
+        if (fetched.length > 0) {
+          const first = fetched[0];
+          console.log(first);
+          setCrowdSentiment(first.crowdSentiment);
+          setIsFire(first.isFire);
+          setPeopleCount(first.peopleCount);
+        }
+      } catch (err) {
+        console.error("Error fetching users:", err);
+      }
+    };
+
+    fetchCameraDetails();
+  }, []);
 
   useEffect(() => {
     const fetchCounts = async () => {
@@ -61,8 +101,6 @@ export default function DashboardPage() {
 
     fetchCounts();
   }, []);
-
-  {console.log(JSON.stringify(counts))}
 
   if (!user)
     return (
@@ -91,8 +129,6 @@ export default function DashboardPage() {
             gap: 4,
           }}
         >
-         
-
           {counts &&
             [
               ...Object.entries(counts).map(([role, count]) => ({
@@ -124,40 +160,41 @@ export default function DashboardPage() {
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
           {[
             {
-              label: "West Gate",
-              value: "4200 / 5000",
-              density: "80%",
+              label: "3C",
+              value: `${peopleCount ?? 1} / 130`,
+              density: ((peopleCount ?? 1) / 130).toFixed(2) + "%",
+              color: "green",
+            },
+            {
+              label: "2B",
+              value: "110 / 130",
+              density: "84%",
+              color: "orange",
+            },
+            {
+              label: "1A",
+              value: "130 / 130",
+              density: "100%",
               color: "red",
             },
             {
-              label: "VIP Area",
-              value: "4200 / 5000",
-              density: "80%",
+              label: "4D",
+              value: "125 / 130",
+              density: "96%",
               color: "red",
             },
             {
-              label: "Main Stage",
-              value: "4200 / 5000",
-              density: "80%",
-              color: "red",
-            },
-            {
-              label: "Exit Gate",
-              value: "4200 / 5000",
-              density: "60%",
+              label: "4C",
+              value: "115 / 130",
+              density: "88%",
               color: "yellow",
             },
             {
-              label: "Dinner Place",
-              value: "4200 / 5000",
-              density: "80%",
-              color: "red",
-            },
-            {
-              label: "Parking",
-              value: "420 / 5000",
-              density: "20%",
+              label: "3A",
+              value: "108 / 130",
+              density: "83%",
               color: "green",
+              heat: true,
             },
           ].map((zone) => (
             <Paper
@@ -183,11 +220,25 @@ export default function DashboardPage() {
               <Typography variant="body2">
                 {zone.value} • {zone.density} Density
               </Typography>
+              {zone.heat && (
+                <Typography variant="body2">
+                  {isFire && isFire !== "N/A" ? (
+                    <>
+                      <FaFire /> {isFire} •
+                    </>
+                  ) : null}
+                  {crowdSentiment && crowdSentiment !== "N/A" ? (
+                    <>
+                      <MdOutlineSentimentSatisfied /> {crowdSentiment}
+                    </>
+                  ) : null}
+                </Typography>
+              )}
             </Paper>
           ))}
         </Box>
       </Paper>
-      
+
       <Paper sx={{ display: "flex", gap: 2, backgroundColor: "transparent" }}>
         <Paper sx={{ p: 2, flex: 2 }}>
           <HeatmapMap />

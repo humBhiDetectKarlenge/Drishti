@@ -80,9 +80,8 @@ const HeatmapMap = () => {
   }, [users, isLoaded]);
 
   const markerUsers = users.filter((user) => user.userType !== "crowd");
-  console.log(markerUsers);
+  // console.log(markerUsers);
 
-  // ✅ Fit bounds once map and users are ready
   useEffect(() => {
     if (!isLoaded || !mapRef.current || users.length === 0) return;
 

@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
       userEmail
     };
 
-    console.log("Final docData to Firestore:", docData);
+    // console.log("Final docData to Firestore:", docData);
 
     await addDoc(collection(db, "reports"), docData);
 

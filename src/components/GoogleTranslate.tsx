@@ -41,7 +41,7 @@ export default function GoogleTranslate() {
           },
           'google_translate_element'
         );
-        console.log('[Google Translate] Widget initialized.');
+        // console.log('[Google Translate] Widget initialized.');
       } catch (error) {
         console.error('[Google Translate] Initialization error:', error);
       }
