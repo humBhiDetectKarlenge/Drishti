@@ -70,7 +70,7 @@ export default function SecurityPage() {
     formData.append("issueType", form.issueType);
     formData.append("priority", form.priority);
     formData.append("uuid", form.uuid);
-    formData.append("authority", "Security"); //userType
+    formData.append("userType", "Security"); 
     formData.append("description", form.description);
     formData.append("timestamp", form.timestamp);
 

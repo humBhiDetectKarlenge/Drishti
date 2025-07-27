@@ -2,6 +2,7 @@ import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
+import { DevBundlerService } from 'next/dist/server/lib/dev-bundler-service';
 
 
 const firebaseConfig = {
@@ -15,7 +16,10 @@ const firebaseConfig = {
     measurementId: process.env.NEXT_PUBLIC_MEASUREMENT_ID
   };
 
-const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+
+  const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+  
+
 
 export const auth = getAuth(app);
 export const db = getFirestore(app);

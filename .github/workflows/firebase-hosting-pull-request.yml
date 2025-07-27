@@ -18,4 +18,4 @@ jobs:
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_HUM_BHI_DETECT_KARLENGE }}
-          projectId: hum-bhi-detect-karlenge
+          projectId: tokyo-unity-466206-g8

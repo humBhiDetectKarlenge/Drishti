@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
         coordinates,
         lastUpdated: serverTimestamp(),
       },
-      { merge: true } // will update only coordinates, not overwrite other data
+      { merge: true } 
     );
 
     return NextResponse.json({ success: true, message: "Location updated" });
