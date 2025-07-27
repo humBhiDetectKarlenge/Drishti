@@ -197,14 +197,14 @@ export default function DashboardPage() {
           <TopAlerts />
         </Paper>
       </Paper>
-      <Paper sx={{ p: 2 }}>
+      {/* <Paper sx={{ p: 2 }}>
         {" "}
         <EmergencyControls />{" "}
       </Paper>{" "}
       <Paper sx={{ p: 2 }}>
         {" "}
         <ZoneManagement />{" "}
-      </Paper>
+      </Paper> */}
     </Box>
   );
 }

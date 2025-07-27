@@ -1,62 +1,43 @@
 "use client";
 import { Box } from "@mui/material";
+import Cam1 from "../../../../public/cam1.jpeg";
+import Cam2 from "../../../../public/cam2.jpeg";
+import Cam3 from "../../../../public/cam3.jpeg";
+import Cam4 from "../../../../public/cam4.jpeg";
+import Image from "next/image";
 
 export default function LiveCamera() {
-  return (
-    // <Box
-    //   sx={{
-    //     height: "100%",
-    //     weight: "100%",
-    //     display: "flex",
-    //     flexDirection: "column",
-    //   }}
-    // >
-    //   <Box
-    //     sx={{
-    //       height: "50%",
-    //       weight: "100%",
-    //       // display: "flex",
-    //       // flexDirection: "row",
-    //     }}
-    //   >
-    //     <Box sx={{ height: "50%", weight: "50%", bgcolor: "red" }}></Box>
-    //     <Box sx={{ height: "50%", weight: "50%", bgcolor: "green" }}> </Box>
-    //   </Box>
-    //   <Box
-    //     sx={{
-    //       height: "50%",
-    //       weight: "100%",
-    //       display: "flex",
-    //       flexDirection: "row",
-    //     }}
-    //   >
-    //     <Box sx={{ height: "50%", weight: "50%", bgcolor: "blue" }}></Box>
-    //     <Box sx={{ height: "50%", weight: "50%", bgcolor: "yellow" }}></Box>
-    //   </Box>
-    // </Box>
+  const cameras = [Cam1, Cam2, Cam3, Cam4];
 
+  return (
     <Box
       sx={{
         display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        gridTemplateRows: "1fr 1fr",
+        gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+        gridTemplateRows: { xs: "repeat(4, 1fr)", sm: "1fr 1fr" },
         width: "100%",
-        height: "100%",
-        mt: "44px",
+        height: "calc(100vh - 64px)", 
+        mt: "64px",
       }}
     >
-      <Box sx={{ bgcolor: "red", border: "1px solid white" }}>
-        <iframe src="https://192.168.137.169:8080/" style={{height:'100%', width:'100%'}}></iframe>
-      </Box>
-      <Box sx={{ bgcolor: "blue", border: "1px solid white" }}>
-        <iframe src="https://192.168.137.169:8080/" style={{height:'100%', width:'100%'}}></iframe>
-      </Box>
-      <Box sx={{ bgcolor: "green", border: "1px solid white" }}>
-        <iframe src="https://192.168.137.169:8080/" style={{height:'100%', width:'100%'}}></iframe>
-      </Box>
-      <Box sx={{ bgcolor: "yellow", border: "1px solid white" }}> 
-      <iframe src="https://192.168.137.169:8080/" style={{height:'100%', width:'100%'}}></iframe>
-      </Box>
+      {cameras.map((cam, index) => (
+        <Box
+          key={index}
+          sx={{
+            border: "2px solid white",
+            position: "relative",
+            width: "100%",
+            height: "100%",
+          }}
+        >
+          <Image
+            src={cam}
+            alt={`Camera ${index + 1}`}
+            fill
+            style={{ objectFit: "cover" }}
+          />
+        </Box>
+      ))}
     </Box>
   );
 }
